@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 800" width="100%" height="100%" style="background-color: #0F172A; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Arrowhead Marker -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#94A3B8" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#38BDF8" />
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34D399" />
+    </marker>
+  </defs>
+
+  <!-- Title & Header -->
+  <text x="50" y="50" fill="#F8FAFC" font-size="24" font-weight="700" letter-spacing="0.5">PQC &amp; CBOM Risk Auditor — System Architecture</text>
+  <text x="50" y="78" fill="#94A3B8" font-size="14">Enterprise Post-Quantum Cryptography &amp; DORA Compliance Platform</text>
+
+  <!-- ==================== CONNECTORS (Behind Boxes) ==================== -->
+  <!-- Inputs to Ingestion Layer -->
+  <path d="M 170 210 L 250 210" fill="none" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)" />
+  <path d="M 170 310 L 250 310" fill="none" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)" />
+  <path d="M 170 410 L 250 410" fill="none" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Ingestion to Core Engine -->
+  <path d="M 430 210 L 510 260" fill="none" stroke="#38BDF8" stroke-width="2" marker-end="url(#arrow-blue)" />
+  <path d="M 430 310 L 510 310" fill="none" stroke="#38BDF8" stroke-width="2" marker-end="url(#arrow-blue)" />
+  <path d="M 430 410 L 510 360" fill="none" stroke="#38BDF8" stroke-width="2" marker-end="url(#arrow-blue)" />
+
+  <!-- Core Engine to Intelligence & Mapping -->
+  <path d="M 690 260 L 770 210" fill="none" stroke="#38BDF8" stroke-width="2" marker-end="url(#arrow-blue)" />
+  <path d="M 690 310 L 770 310" fill="none" stroke="#38BDF8" stroke-width="2" marker-end="url(#arrow-blue)" />
+  <path d="M 690 360 L 770 410" fill="none" stroke="#38BDF8" stroke-width="2" marker-end="url(#arrow-blue)" />
+
+  <!-- Intelligence to Output Delivery Layer -->
+  <path d="M 870 480 L 870 540 L 550 540 L 550 580" fill="none" stroke="#34D399" stroke-width="2" marker-end="url(#arrow-emerald)" />
+
+  <!-- ==================== COLUMN 1: TARGETS & INPUTS ==================== -->
+  <g transform="translate(50, 120)">
+    <rect width="120" height="380" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+    <text x="60" y="30" fill="#94A3B8" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1">AUDIT INPUTS</text>
+
+    <!-- Node 1: TLS Endpoints -->
+    <g transform="translate(10, 50)">
+      <rect width="100" height="70" rx="6" fill="#0F172A" stroke="#475569" stroke-width="1" />
+      <text x="50" y="30" fill="#F1F5F9" font-size="12" font-weight="600" text-anchor="middle">TLS / HTTPS</text>
+      <text x="50" y="48" fill="#64748B" font-size="10" text-anchor="middle">Endpoints &amp; APIs</text>
+    </g>
+
+    <!-- Node 2: Source Repos -->
+    <g transform="translate(10, 150)">
+      <rect width="100" height="70" rx="6" fill="#0F172A" stroke="#475569" stroke-width="1" />
+      <text x="50" y="30" fill="#F1F5F9" font-size="12" font-weight="600" text-anchor="middle">Git Repos</text>
+      <text x="50" y="48" fill="#64748B" font-size="10" text-anchor="middle">Java, Go, Py, .NET</text>
+    </g>
+
+    <!-- Node 3: X.509 PKI -->
+    <g transform="translate(10, 250)">
+      <rect width="100" height="70" rx="6" fill="#0F172A" stroke="#475569" stroke-width="1" />
+      <text x="50" y="30" fill="#F1F5F9" font-size="12" font-weight="600" text-anchor="middle">X.509 PKI</text>
+      <text x="50" y="48" fill="#64748B" font-size="10" text-anchor="middle">Root &amp; Intermediate</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 2: INGESTION & PARSING LAYER ==================== -->
+  <g transform="translate(250, 120)">
+    <rect width="180" height="380" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+    <text x="90" y="30" fill="#38BDF8" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1">1. INGESTION &amp; PROBES</text>
+
+    <!-- Probe 1 -->
+    <g transform="translate(15, 50)">
+      <rect width="150" height="70" rx="6" fill="#0F172A" stroke="#0284C7" stroke-width="1.5" />
+      <text x="75" y="28" fill="#F8FAFC" font-size="12" font-weight="600" text-anchor="middle">Network Handshake</text>
+      <text x="75" y="46" fill="#94A3B8" font-size="10" text-anchor="middle">TLS 1.3 / Hybrid KEM</text>
+      <text x="75" y="58" fill="#38BDF8" font-size="9" text-anchor="middle">ML-KEM-768 Prober</text>
+    </g>
+
+    <!-- Probe 2 -->
+    <g transform="translate(15, 150)">
+      <rect width="150" height="70" rx="6" fill="#0F172A" stroke="#0284C7" stroke-width="1.5" />
+      <text x="75" y="28" fill="#F8FAFC" font-size="12" font-weight="600" text-anchor="middle">Static AST Parser</text>
+      <text x="75" y="46" fill="#94A3B8" font-size="10" text-anchor="middle">Crypto Primitives</text>
+      <text x="75" y="58" fill="#38BDF8" font-size="9" text-anchor="middle">Multi-Language Trees</text>
+    </g>
+
+    <!-- Probe 3 -->
+    <g transform="translate(15, 250)">
+      <rect width="150" height="70" rx="6" fill="#0F172A" stroke="#0284C7" stroke-width="1.5" />
+      <text x="75" y="28" fill="#F8FAFC" font-size="12" font-weight="600" text-anchor="middle">Cert Chain Validator</text>
+      <text x="75" y="46" fill="#94A3B8" font-size="10" text-anchor="middle">Signature &amp; Key Size</text>
+      <text x="75" y="58" fill="#38BDF8" font-size="9" text-anchor="middle">Shor Factorization Risk</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 3: CORE AUDIT ENGINE ==================== -->
+  <g transform="translate(510, 120)">
+    <rect width="180" height="380" rx="8" fill="#1E293B" stroke="#0284C7" stroke-width="2" />
+    <text x="90" y="30" fill="#38BDF8" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1">2. CORE AUDIT ENGINE</text>
+
+    <!-- Sub-engine 1 -->
+    <g transform="translate(15, 50)">
+      <rect width="150" height="85" rx="6" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5" />
+      <text x="75" y="26" fill="#F8FAFC" font-size="12" font-weight="600" text-anchor="middle">CBOM Generator</text>
+      <text x="75" y="44" fill="#94A3B8" font-size="10" text-anchor="middle">CycloneDX 1.6+ JSON</text>
+      <text x="75" y="58" fill="#94A3B8" font-size="10" text-anchor="middle">SPDX 3.0 Manifests</text>
+      <text x="75" y="72" fill="#38BDF8" font-size="9" text-anchor="middle">Cryptographic Inventory</text>
+    </g>
+
+    <!-- Sub-engine 2 -->
+    <g transform="translate(15, 155)">
+      <rect width="150" height="85" rx="6" fill="#0F172A" stroke="#F59E0B" stroke-width="1.5" />
+      <text x="75" y="26" fill="#F8FAFC" font-size="12" font-weight="600" text-anchor="middle">HNDL Risk Index</text>
+      <text x="75" y="44" fill="#94A3B8" font-size="10" text-anchor="middle">Mosca's Theorem Calc</text>
+      <text x="75" y="58" fill="#94A3B8" font-size="10" text-anchor="middle">Retention vs. CRQC</text>
+      <text x="75" y="72" fill="#F59E0B" font-size="9" text-anchor="middle">Quantified Score (0-100)</text>
+    </g>
+
+    <!-- Sub-engine 3 -->
+    <g transform="translate(15, 260)">
+      <rect width="150" height="85" rx="6" fill="#0F172A" stroke="#10B981" stroke-width="1.5" />
+      <text x="75" y="26" fill="#F8FAFC" font-size="12" font-weight="600" text-anchor="middle">DORA &amp; NIST Rules</text>
+      <text x="75" y="44" fill="#94A3B8" font-size="10" text-anchor="middle">DORA Art 9 / 13</text>
+      <text x="75" y="58" fill="#94A3B8" font-size="10" text-anchor="middle">FIPS 203/204/205</text>
+      <text x="75" y="72" fill="#10B981" font-size="9" text-anchor="middle">Compliance Gap Matrix</text>
+    </g>
+  </g>
+
+  <!-- ==================== COLUMN 4: REGULATORY & THREAT INTELLIGENCE ==================== -->
+  <g transform="translate(770, 120)">
+    <rect width="200" height="380" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+    <text x="100" y="30" fill="#94A3B8" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1">3. KNOWLEDGE BASES</text>
+
+    <!-- KB 1: NIST PQC Registry -->
+    <g transform="translate(15, 50)">
+      <rect width="170" height="70" rx="6" fill="#0F172A" stroke="#475569" stroke-width="1" />
+      <text x="85" y="26" fill="#F1F5F9" font-size="12" font-weight="600" text-anchor="middle">NIST PQC Registry</text>
+      <text x="85" y="44" fill="#94A3B8" font-size="10" text-anchor="middle">ML-KEM (Kyber)</text>
+      <text x="85" y="58" fill="#64748B" font-size="9" text-anchor="middle">ML-DSA &amp; SLH-DSA</text>
+    </g>
+
+    <!-- KB 2: DORA & BSI Standards -->
+    <g transform="translate(15, 150)">
+      <rect width="170" height="70" rx="6" fill="#0F172A" stroke="#475569" stroke-width="1" />
+      <text x="85" y="26" fill="#F1F5F9" font-size="12" font-weight="600" text-anchor="middle">Standards Matrix</text>
+      <text x="85" y="44" fill="#94A3B8" font-size="10" text-anchor="middle">EU DORA, BSI TR-02102</text>
+      <text x="85" y="58" fill="#64748B" font-size="9" text-anchor="middle">NCSC &amp; CNSA 2.0</text>
+    </g>
+
+    <!-- KB 3: Remediation Recipes -->
+    <g transform="translate(15, 250)">
+      <rect width="170" height="70" rx="6" fill="#0F172A" stroke="#475569" stroke-width="1" />
+      <text x="85" y="26" fill="#F1F5F9" font-size="12" font-weight="600" text-anchor="middle">Migration Catalog</text>
+      <text x="85" y="44" fill="#94A3B8" font-size="10" text-anchor="middle">Hybrid Migration Paths</text>
+      <text x="85" y="58" fill="#64748B" font-size="9" text-anchor="middle">Code Replacement Snippets</text>
+    </g>
+  </g>
+
+  <!-- ==================== BOTTOM ROW: DUAL OUTPUT & INTEGRATION MODES ==================== -->
+  <g transform="translate(50, 580)">
+    <rect width="920" height="170" rx="8" fill="#1E293B" stroke="#34D399" stroke-width="1.5" />
+    <text x="460" y="28" fill="#34D399" font-size="13" font-weight="700" text-anchor="middle" letter-spacing="1">4. DUAL EXECUTION &amp; DELIVERY LAYER</text>
+
+    <!-- Mode A: Standalone Auditor Mode -->
+    <g transform="translate(30, 45)">
+      <rect width="400" height="100" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1" />
+      <text x="200" y="28" fill="#F8FAFC" font-size="13" font-weight="600" text-anchor="middle">Standalone Mode (Auditor / Consultant)</text>
+      <text x="200" y="50" fill="#94A3B8" font-size="11" text-anchor="middle">⚡ CLI Tool (`python -m pqc_auditor`)</text>
+      <text x="200" y="68" fill="#94A3B8" font-size="11" text-anchor="middle">📊 Interactive HTML Dashboard &amp; PDF Report</text>
+      <text x="200" y="86" fill="#34D399" font-size="10" text-anchor="middle">Excel Risk Workpapers for Supervisory Audits</text>
+    </g>
+
+    <!-- Mode B: Back-Office Integrated Mode -->
+    <g transform="translate(490, 45)">
+      <rect width="400" height="100" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1" />
+      <text x="200" y="28" fill="#F8FAFC" font-size="13" font-weight="600" text-anchor="middle">Integrated Mode (Enterprise Back-Office)</text>
+      <text x="200" y="50" fill="#94A3B8" font-size="11" text-anchor="middle">🌐 REST API &amp; Webhooks (OpenAPI 3.0)</text>
+      <text x="200" y="68" fill="#94A3B8" font-size="11" text-anchor="middle">🛡️ CI/CD Quality Gate (GitHub Actions / GitLab)</text>
+      <text x="200" y="86" fill="#38BDF8" font-size="10" text-anchor="middle">GRC Connectors (ServiceNow / RSA Archer / SIEM)</text>
+    </g>
+  </g>
+</svg>
