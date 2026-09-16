@@ -1,0 +1,23 @@
+name: Automated CBOM & PQC Audit Gate
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  pqc-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Execute CBOM & PQC Scan
+        run: |
+          python3 -m unittest discover tests
+          python3 -c "from pqc_auditor.cbom_parser import CBOMParser; cbom = CBOMParser().scan_directory('.'); print(f'CBOM Findings: {cbom[\"metadata\"][\"total_cryptographic_findings\"]}')"
