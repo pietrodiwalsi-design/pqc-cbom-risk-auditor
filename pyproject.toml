@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pqc-cbom-risk-auditor"
+version = "1.0.0"
+description = "Automated Cryptographic Bill of Materials (CBOM) & PQC TLS Scanner"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pydantic>=2.0.0",
+    "requests>=2.31.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
