@@ -24,31 +24,40 @@ class CBOMParser:
     ]
 
     SUPPORTED_EXTENSIONS = ('.py', '.java', '.go', '.js', '.ts', '.c', '.cpp', '.cs', '.kt', '.rs')
+    IGNORED_DIR_NAMES = {'.git', 'node_modules', '__pycache__', '.venv', 'venv', 'dist', 'build'}
+    MAX_FILE_BYTES = 5 * 1024 * 1024  # Skip pathologically large files (perf/DoS guard)
+
+    def __init__(self):
+        # Precompile patterns once per instance for performance on large repo scans.
+        self._compiled_patterns = [
+            (pat, re.compile(pat["regex"], re.IGNORECASE)) for pat in self.CRYPTO_PATTERNS
+        ]
 
     def scan_directory(self, repo_path: str) -> Dict[str, Any]:
         findings = []
         files_scanned = 0
-        for root, _, files in os.walk(repo_path):
-            if any(ign in root for ign in ['.git', 'node_modules', '__pycache__', '.venv', 'dist', 'build']):
-                continue
+        for root, dirs, files in os.walk(repo_path, followlinks=False):
+            dirs[:] = [d for d in dirs if d not in self.IGNORED_DIR_NAMES]
             for file in files:
                 if file.endswith(self.SUPPORTED_EXTENSIONS):
-                    files_scanned += 1
                     filepath = os.path.join(root, file)
                     try:
+                        if os.path.getsize(filepath) > self.MAX_FILE_BYTES:
+                            continue
+                        files_scanned += 1
                         with open(filepath, 'r', errors='ignore') as f:
                             content = f.read()
-                            for pat in self.CRYPTO_PATTERNS:
-                                matches = re.findall(pat["regex"], content, re.IGNORECASE)
-                                if matches:
-                                    findings.append({
-                                        "algorithm": pat["name"],
-                                        "category": pat["category"],
-                                        "pqc_status": pat["pqc_status"],
-                                        "file": os.path.relpath(filepath, repo_path),
-                                        "occurrences": len(matches)
-                                    })
-                    except Exception:
+                        for pat, compiled in self._compiled_patterns:
+                            matches = compiled.findall(content)
+                            if matches:
+                                findings.append({
+                                    "algorithm": pat["name"],
+                                    "category": pat["category"],
+                                    "pqc_status": pat["pqc_status"],
+                                    "file": os.path.relpath(filepath, repo_path),
+                                    "occurrences": len(matches)
+                                })
+                    except (OSError, UnicodeError):
                         continue
 
         vulnerable_count = sum(1 for f in findings if "VULNERABLE" in f["pqc_status"])

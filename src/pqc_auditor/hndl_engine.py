@@ -6,6 +6,15 @@ class HNDLEngine:
         Mosca's Theorem: If Data Shelf Life (X) + Migration Time (Y) > Quantum Horizon (Z),
         then system is immediately vulnerable to retrospective decryption.
         """
+        if not isinstance(retention_years, (int, float)) or isinstance(retention_years, bool):
+            raise TypeError("retention_years must be a number")
+        if not isinstance(y2q_horizon_years, (int, float)) or isinstance(y2q_horizon_years, bool):
+            raise TypeError("y2q_horizon_years must be a number")
+        if retention_years < 0:
+            raise ValueError("retention_years must be non-negative")
+        if y2q_horizon_years < 0:
+            raise ValueError("y2q_horizon_years must be non-negative")
+
         shelf_life_vulnerability = retention_years > y2q_horizon_years
         
         if retention_years >= 20:

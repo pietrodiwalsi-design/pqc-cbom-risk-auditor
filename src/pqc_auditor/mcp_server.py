@@ -79,35 +79,57 @@ def handle_request(req):
             "result": {"tools": TOOLS}
         }
     elif method == "tools/call":
+        if not isinstance(params, dict):
+            return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32602, "message": "Invalid params: expected object"}}
         tool_name = params.get("name")
-        args = params.get("arguments", {})
+        args = params.get("arguments", {}) or {}
+        if not isinstance(args, dict):
+            return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32602, "message": "Invalid params: 'arguments' must be an object"}}
 
-        if tool_name == "probe_pqc_endpoint":
-            prober = TLSProber()
-            res = prober.probe_endpoint(args.get("host"), args.get("port", 443))
-            return {
-                "jsonrpc": "2.0",
-                "id": req_id,
-                "result": {"content": [{"type": "text", "text": json.dumps(res, indent=2)}], "isError": False}
-            }
-        elif tool_name == "scan_cbom_repository":
-            parser = CBOMParser()
-            res = parser.scan_directory(args.get("repo_path"))
-            return {
-                "jsonrpc": "2.0",
-                "id": req_id,
-                "result": {"content": [{"type": "text", "text": json.dumps(res, indent=2)}], "isError": False}
-            }
-        elif tool_name == "audit_hndl_risk":
-            hndl = HNDLEngine()
-            res = hndl.calculate_hndl_score(args.get("retention_years", 15))
-            return {
-                "jsonrpc": "2.0",
-                "id": req_id,
-                "result": {"content": [{"type": "text", "text": json.dumps(res, indent=2)}], "isError": False}
-            }
-        else:
-            return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32602, "message": f"Unknown tool: {tool_name}"}}
+        try:
+            if tool_name == "probe_pqc_endpoint":
+                host = args.get("host")
+                if not isinstance(host, str) or not host.strip():
+                    return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32602, "message": "Invalid params: 'host' is required and must be a non-empty string"}}
+                port = args.get("port", 443)
+                if not isinstance(port, int) or isinstance(port, bool) or not (0 < port < 65536):
+                    return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32602, "message": "Invalid params: 'port' must be an integer between 1 and 65535"}}
+                prober = TLSProber()
+                res = prober.probe_endpoint(host, port)
+                return {
+                    "jsonrpc": "2.0",
+                    "id": req_id,
+                    "result": {"content": [{"type": "text", "text": json.dumps(res, indent=2)}], "isError": False}
+                }
+            elif tool_name == "scan_cbom_repository":
+                repo_path = args.get("repo_path")
+                if not isinstance(repo_path, str) or not repo_path.strip():
+                    return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32602, "message": "Invalid params: 'repo_path' is required and must be a non-empty string"}}
+                resolved = os.path.realpath(repo_path)
+                if not os.path.isdir(resolved):
+                    return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32602, "message": f"Invalid params: 'repo_path' does not exist or is not a directory: {repo_path}"}}
+                parser = CBOMParser()
+                res = parser.scan_directory(resolved)
+                return {
+                    "jsonrpc": "2.0",
+                    "id": req_id,
+                    "result": {"content": [{"type": "text", "text": json.dumps(res, indent=2)}], "isError": False}
+                }
+            elif tool_name == "audit_hndl_risk":
+                retention_years = args.get("retention_years", 15)
+                if not isinstance(retention_years, int) or isinstance(retention_years, bool) or retention_years < 0:
+                    return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32602, "message": "Invalid params: 'retention_years' must be a non-negative integer"}}
+                hndl = HNDLEngine()
+                res = hndl.calculate_hndl_score(retention_years)
+                return {
+                    "jsonrpc": "2.0",
+                    "id": req_id,
+                    "result": {"content": [{"type": "text", "text": json.dumps(res, indent=2)}], "isError": False}
+                }
+            else:
+                return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32602, "message": f"Unknown tool: {tool_name}"}}
+        except Exception as e:
+            return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32603, "message": f"Internal error executing tool '{tool_name}': {str(e)}"}}
     else:
         return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32601, "message": f"Method not found: {method}"}}
 
@@ -116,14 +138,26 @@ def main():
         line = line.strip()
         if not line:
             continue
+        req_id = None
         try:
             req = json.loads(line)
+            if isinstance(req, dict):
+                req_id = req.get("id")
+            if not isinstance(req, dict) or req.get("jsonrpc") != "2.0" or "method" not in req:
+                err = {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32600, "message": "Invalid Request: not a valid JSON-RPC 2.0 request object"}}
+                sys.stdout.write(json.dumps(err) + "\n")
+                sys.stdout.flush()
+                continue
             resp = handle_request(req)
             if resp is not None:
                 sys.stdout.write(json.dumps(resp) + "\n")
                 sys.stdout.flush()
+        except json.JSONDecodeError as e:
+            err = {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": f"Parse error: {str(e)}"}}
+            sys.stdout.write(json.dumps(err) + "\n")
+            sys.stdout.flush()
         except Exception as e:
-            err = {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": str(e)}}
+            err = {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32603, "message": f"Internal error: {str(e)}"}}
             sys.stdout.write(json.dumps(err) + "\n")
             sys.stdout.flush()
 

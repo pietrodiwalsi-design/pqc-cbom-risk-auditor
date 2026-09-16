@@ -2,7 +2,9 @@ class DORAComplianceExporter:
     """Maps PQC & CBOM findings against EU DORA (Articles 9 & 13)."""
 
     def generate_dora_matrix(self, cbom: dict, prober_results: list) -> dict:
-        crypto_assets = cbom.get("cryptographicAssets", [])
+        cbom = cbom or {}
+        prober_results = prober_results or []
+        crypto_assets = cbom.get("cryptographicAssets", []) or []
         vulnerable_count = sum(1 for a in crypto_assets if "VULNERABLE" in a.get("pqc_status", ""))
         pqc_ready_endpoints = sum(1 for p in prober_results if p.get("pqc_supported"))
 
