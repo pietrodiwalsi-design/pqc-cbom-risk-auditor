@@ -19,12 +19,28 @@ class DashboardGenerator:
 
         endpoints_rows = ""
         for p in prober_results:
-            pqc_badge = "<span style='background: rgba(16,185,129,0.2); color: #10b981; padding: 4px 8px; border-radius: 6px; font-weight:700;'>PQC ACTIVE</span>" if p.get('pqc_supported') else "<span style='background: rgba(239,68,68,0.2); color: #ef4444; padding: 4px 8px; border-radius: 6px; font-weight:700;'>NO PQC</span>"
+            # FIX (2026-09-18 review, prober evidence-quality follow-through):
+            # a failed probe now reports status != "ok" with
+            # negotiated_group/pqc_supported explicitly None. The previous
+            # `.get('negotiated_group', 'Classical')` fallback only applied
+            # when the KEY was missing, not when its VALUE was None, so a
+            # failed probe would have rendered the literal text "None" in
+            # this dashboard — the same "silent failure looks like a result"
+            # problem the prober fix addresses. Failed probes now render an
+            # explicit "No verdict (status)" badge instead of a PQC/NO PQC
+            # claim or the word "None".
+            status = p.get('status', 'ok')
+            if status != 'ok':
+                pqc_badge = f"<span style='background: rgba(148,163,184,0.2); color: #94a3b8; padding: 4px 8px; border-radius: 6px; font-weight:700;'>NO VERDICT ({status})</span>"
+                group_display = p.get('error_detail') or 'measurement failed'
+            else:
+                pqc_badge = "<span style='background: rgba(16,185,129,0.2); color: #10b981; padding: 4px 8px; border-radius: 6px; font-weight:700;'>PQC ACTIVE</span>" if p.get('pqc_supported') else "<span style='background: rgba(239,68,68,0.2); color: #ef4444; padding: 4px 8px; border-radius: 6px; font-weight:700;'>NO PQC</span>"
+                group_display = p.get('negotiated_group') or 'Classical'
             endpoints_rows += f"""
             <tr style="border-bottom: 1px solid #334155;">
               <td style="padding: 10px; color: #f8fafc; font-weight: 600;">{p.get('host')}</td>
               <td style="padding: 10px;">{pqc_badge}</td>
-              <td style="padding: 10px; color: #38bdf8;">{p.get('negotiated_group', 'Classical')}</td>
+              <td style="padding: 10px; color: #38bdf8;">{group_display}</td>
               <td style="padding: 10px; color: #94a3b8;">{p.get('latency_ms', 0)} ms</td>
             </tr>"""
 

@@ -21,7 +21,14 @@ SERVER_INFO = {
 TOOLS = [
     {
         "name": "probe_pqc_endpoint",
-        "description": "Performs a live TLS 1.3 Handshake probe to test for NIST FIPS 203 ML-KEM-768 quantum resilience.",
+        "description": (
+            "Performs a live TLS 1.3 Handshake probe to test for NIST FIPS 203 ML-KEM-768 quantum resilience. "
+            "Response always includes a 'status' field (ok | dns_error | connect_timeout | tls_alert | protocol_error); "
+            "'negotiated_group' and 'pqc_supported' are null unless status='ok' — a failed measurement never yields "
+            "a risk verdict. 'negotiated_group' reports the real negotiated TLS group (e.g. x25519, secp256r1, "
+            "X25519MLKEM768, or psk_only for PSK-only resumption), never a discarded classical placeholder. "
+            "HNDL/Harvest-Now-Decrypt-Later risk scoring is NOT computed here — use the separate 'audit_hndl_risk' tool."
+        ),
         "inputSchema": {
             "type": "object",
             "properties": {
